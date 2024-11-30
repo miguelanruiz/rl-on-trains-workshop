@@ -1,7 +1,7 @@
 import numpy as np
 from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_utils import get_new_position
-from flatland.envs.agent_utils import RailAgentStatus
+from flatland.envs.agent_utils import TrainState
 from flatland.envs.rail_env import fast_count_nonzero, fast_argmax
 
 """
@@ -102,7 +102,7 @@ class FastTreeObs(ObservationBuilder):
                     self.env.agents[a].direction)
             agents_on_switch.update({a: ret_agents_on_switch})
             agents_on_switch_all.update({a: ret_agents_on_switch_all})
-            ready_to_depart = self.env.agents[a].status == RailAgentStatus.READY_TO_DEPART
+            ready_to_depart = self.env.agents[a].status == TrainState.READY_TO_DEPART
             agents_near_to_switch.update({a: (ret_agents_near_to_switch and not ready_to_depart)})
 
             agents_can_choose.update({a: agents_on_switch[a] or agents_near_to_switch[a]})
@@ -216,9 +216,9 @@ class FastTreeObs(ObservationBuilder):
         # observation[1]  : 1 path towards target (direction 1) / otherwise 0 -> path is longer or there is no path
         # observation[2]  : 1 path towards target (direction 2) / otherwise 0 -> path is longer or there is no path
         # observation[3]  : 1 path towards target (direction 3) / otherwise 0 -> path is longer or there is no path
-        # observation[4]  : int(agent.status == RailAgentStatus.READY_TO_DEPART)
-        # observation[5]  : int(agent.status == RailAgentStatus.ACTIVE)
-        # observation[6]  : int(agent.status == RailAgentStatus.DONE or agent.status == RailAgentStatus.DONE_REMOVED)
+        # observation[4]  : int(agent.state == TrainState.READY_TO_DEPART)
+        # observation[5]  : int(agent.state == TrainState.ACTIVE)
+        # observation[6]  : int(agent.state == TrainState.DONE or agent.state == TrainState.DONE_REMOVED)
         # observation[7]  : current agent is located at a switch, where it can take a routing decision
         # observation[8]  : current agent is located at a cell, where it has to take a stop-or-go decision
         # observation[9]  : current agent is located one step before/after a switch
@@ -244,10 +244,10 @@ class FastTreeObs(ObservationBuilder):
         agent = self.env.agents[handle]
 
         agent_done = False
-        if agent.status == RailAgentStatus.READY_TO_DEPART:
+        if agent.state == TrainState.READY_TO_DEPART:
             agent_virtual_position = agent.initial_position
             observation[4] = 1
-        elif agent.status == RailAgentStatus.ACTIVE:
+        elif agent.state == TrainState.ACTIVE:
             agent_virtual_position = agent.position
             observation[5] = 1
         else:
@@ -296,7 +296,7 @@ class FastTreeObs(ObservationBuilder):
         nb_active_agents = 0
         for h in self.env.get_agent_handles():
             a = self.env.agents[h]
-            if a.status == RailAgentStatus.ACTIVE:
+            if a.status == TrainState.ACTIVE:
                 nb_active_agents += 1
 
         observation[26] = handle / self.env.get_num_agents()
