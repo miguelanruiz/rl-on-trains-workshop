@@ -2,7 +2,6 @@ import numpy as np
 from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_utils import get_new_position
 from flatland.envs.agent_utils import TrainState
-from flatland.envs.rail_env import fast_argmax
 
 """
 LICENCE for the FastTreeObs Observation Builder  
@@ -144,14 +143,8 @@ class FastTreeObs(ObservationBuilder):
         self.build_data()
         return
 
-    def fast_argmax(self, array):
-        if array[0] == 1:
-            return 0
-        if array[1] == 1:
-            return 1
-        if array[2] == 1:
-            return 2
-        return 3
+    def fast_argmax(array):
+        return np.argmax(array)
 
     def _explore(self, handle, new_position, new_direction, depth=0):
         has_opp_agent = 0
