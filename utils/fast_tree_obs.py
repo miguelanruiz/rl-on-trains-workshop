@@ -2,7 +2,7 @@ import numpy as np
 from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_utils import get_new_position
 from flatland.envs.agent_utils import TrainState
-from flatland.envs.rail_env import fast_count_nonzero, fast_argmax
+from flatland.envs.rail_env import fast_argmax
 
 """
 LICENCE for the FastTreeObs Observation Builder  
@@ -40,7 +40,7 @@ class FastTreeObs(ObservationBuilder):
                 pos = (h, w)
                 for dir in range(4):
                     possible_transitions = self.env.rail.get_transitions(*pos, dir)
-                    num_transitions = fast_count_nonzero(possible_transitions)
+                    num_transitions = np.count_nonzero(possible_transitions)
                     if num_transitions > 1:
                         if pos not in switches.keys():
                             switches.update({pos: [dir]})
@@ -263,7 +263,7 @@ class FastTreeObs(ObservationBuilder):
                                              agent.direction]
             possible_transitions = self.env.rail.get_transitions(*agent_virtual_position, agent.direction)
             orientation = agent.direction
-            if fast_count_nonzero(possible_transitions) == 1:
+            if np.count_nonzero(possible_transitions) == 1:
                 orientation = fast_argmax(possible_transitions)
 
             for dir_loop, branch_direction in enumerate([(orientation + dir_loop) % 4 for dir_loop in range(-1, 3)]):
